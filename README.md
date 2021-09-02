@@ -12,6 +12,7 @@ These should be all that you need. Update the README if you install another one
  - Adafruit Unified Sensor
 
 
+# References
 Accelerometer/Gyroscope Reference
 https://learn.adafruit.com/mpu6050-6-dof-accelerometer-and-gyro/arduino
 
