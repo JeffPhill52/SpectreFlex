@@ -28,6 +28,6 @@ https://www.adafruit.com/product/1070
 Bluetooth Module (HC-06)
 Purchased from https://www.amazon.com/DAOKI-Bluetooth-Transceiver-Baseboard-Bi-Directional/dp/B08213W3BS/ref=sr_1_3?dchild=1&keywords=arduino+bluetooth&qid=1629906243&s=industrial&sr=1-3
 
-  One example https://create.arduino.cc/projecthub/RucksikaaR/interfacing-the-hc-06-bluetooth-module-with-arduino-f9c315
+One example https://create.arduino.cc/projecthub/RucksikaaR/interfacing-the-hc-06-bluetooth-module-with-arduino-f9c315
 
 
