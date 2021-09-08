@@ -2,7 +2,7 @@
 Glove Game Controller
 
 # Software
-Arduino IDE: https://www.arduino.cc/en/software
+Arduino IDE: https://www.arduino.cc/en/software (Use the Beta Version)
 
 # Files
 Test Stript: Test_Script.ino
