@@ -12,6 +12,12 @@ SoftwareSerial BTserial(2, 3); // RX | TX
 // Accelerometer Initialization and Constants
 Adafruit_MPU6050 mpu;
 
+// Flex sensor pins
+const int FLEX1 = A0;     // Thumb
+const int FLEX2 = A1;     // Index
+const int FLEX3 = A2;     // Middle
+const int FLEX4 = A3;     // Ring
+
 void setup() {
   Serial.begin(9600);
   Serial.println("Arduino Started");
@@ -103,5 +109,23 @@ void loop() {
   {
     digitalWrite(6, LOW);
   }
+  if(digitalRead(12) == HIGH)
+  {
+    digitalWrite(5, HIGH);
+  }
+  else
+  {
+    digitalWrite(5, LOW);
+  }
+
+  Serial.print(String(analogRead(FLEX1)) + ", ");
+  Serial.print(String(analogRead(FLEX2)) + ", ");
+  Serial.print(String(analogRead(FLEX3)) + ", ");
+  Serial.println(String(analogRead(FLEX4)));
+  delay(250);
+
+
+
+
 
 }
