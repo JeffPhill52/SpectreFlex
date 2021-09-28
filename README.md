@@ -14,6 +14,9 @@ These should be all that you need. Update the README if you install another one
  - Adafruit SSD1306
  - Adafruit Unified Sensor
 
+Arduino Nano Pico
+ - stm32duino X-NUCLEO-IKS01A3
+
 
 # References
 Accelerometer/Gyroscope Reference
