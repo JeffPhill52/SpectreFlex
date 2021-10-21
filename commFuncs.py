@@ -8,9 +8,10 @@ class serConnection:
         self.deviceAddr = deviceAddr
 
         #test size of monitor. then move cursor down slightly RELATIVE to current placement.
-        print(pyautogui.size())
-        pyautogui.moveRel(0, 50, duration = 1)
-
+        #print(pyautogui.size())
+        #pyautogui.moveRel(0, 500, duration = 5)
+        #pyautogui.click()
+        #pyautogui.press('W')
         # Device connection
         print("Connecting to BT device")
         try:  #Attempting to Connect
