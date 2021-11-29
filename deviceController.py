@@ -10,7 +10,7 @@ def main():
                 flexState = controllerState[0:4]
                 acclState = controllerState[4:8]
                 print("Flex State: ", flexState)
-                print("Accl State: ", acclState)                
+                print("Accl State: ", bleController.floatDecoder(acclState))                
 
 
 

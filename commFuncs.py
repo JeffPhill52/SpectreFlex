@@ -7,6 +7,7 @@ import select
 import sys
 import pyautogui
 
+
 # Oversees BLE Communication with Spectre Flex Controller
 class BLE_Controller:
     """ Any method preceeded by '__' is a private method and should not be accessed outside the class """
@@ -56,6 +57,55 @@ class BLE_Controller:
     
     def disconnectDevice(self):
         asyncio.run(self.__disconnectDevice())
+
+    # Decodes the x, y, and z values of the accelerometer from a 4 byte array
+    def floatDecoder(self, acclState):
+        bitArr0 = list('{0:08b}'.format(acclState[0]))
+        bitArr1 = list('{0:08b}'.format(acclState[1]))
+        bitArr2 = list('{0:08b}'.format(acclState[2]))
+        bitArr3 = list('{0:08b}'.format(acclState[3]))
+
+        if bitArr0[7] == 1:
+            x_sign = -1
+        else:
+            x_sign = 1
+
+        if bitArr1[7] == 1:
+            y_sign = -1
+        else:
+            y_sign = 1
+
+        if bitArr2[7] == 1:
+            z_sign = -1
+        else:
+            z_sign = 1
+
+        x = float(bitArr0[6])*x_sign
+        y = float(bitArr1[6])*y_sign
+        z = float(bitArr2[6])*z_sign
+
+        x_dec = float(bitArr3[0])
+        y_dec = float(bitArr3[1])
+        z_dec = float(bitArr3[2])
+
+        for i in range(0,6):
+            x_dec += float(bitArr0[i])*pow(2,i + 1)
+            y_dec += float(bitArr1[i])*pow(2,i + 1)
+            z_dec += float(bitArr2[i])*pow(2,i + 1)
+
+        x_dec = float(x_dec)/float(100)
+        y_dec = float(y_dec)/float(100)
+        z_dec = float(z_dec)/float(100)
+
+        x += x_dec
+        y += y_dec
+        z += z_dec
+
+        return [x, y, z]
+
+
+
+
 
 
 class serConnection:
