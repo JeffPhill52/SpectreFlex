@@ -7,11 +7,10 @@ def main():
         if bleController.connectDevice():
             while(True):
                 controllerState = bleController.readDevice()
-                print(controllerState)
-                gyroState = controllerState[0:3]
-                flexState = controllerState[3:7]
-                acclState = controllerState[7:10]
-                
+                flexState = controllerState[0:4]
+                acclState = controllerState[4:8]
+                print("Flex State: ", flexState)
+                print("Accl State: ", acclState)                
 
 
 
