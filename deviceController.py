@@ -2,14 +2,27 @@ from socket import socket
 import commFuncs
 
 def main():
-    BTconnect = commFuncs.serConnection("COM3", "COM4", '98:D3:21:F4:98:50')
+    bleController = commFuncs.BLE_Controller()
+    if bleController.discoverDevice():
+        if bleController.connectDevice():
+            while(True):
+                controllerState = bleController.readDevice()
+                print(controllerState)
+                gyroState = controllerState[0:3]
+                flexState = controllerState[3:7]
+                acclState = controllerState[7:10]
+                
 
+
+
+    """
     try:
         while True:
             print(BTconnect.readGyro())
             print('bruh')
     except KeyboardInterrupt:
         BTconnect.close()
+    """
 
 if __name__ == "__main__":
     main()
