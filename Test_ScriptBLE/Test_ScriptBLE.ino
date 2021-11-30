@@ -18,6 +18,12 @@ const int FLEX2 = A1;     // Index
 const int FLEX3 = A2;     // Middle
 const int FLEX4 = A3;     // Ring
 
+const int FLEX1_THRESHOLD = 550;
+const int FLEX2_THRESHOLD = 570;
+const int FLEX3_THRESHOLD = 550;
+const int FLEX4_THRESHOLD = 580;
+
+
 char msgBuffer[32];
 
 void startBLE(){
@@ -156,31 +162,31 @@ void loop() {
   acclY_b = (byte) ( (int) (y_a*125));
   acclZ_b = (byte) ((int) (z_a));
 
-  Serial.println("Gyro: ( " + String(x_g) + ", " + String(y_g) + ", " + String(z_g) + " )");
-  Serial.println("Accel: ( " + String(acclFormat[0]) + ", " + String(acclFormat[1]) + ", " + String(acclFormat[2]) + ", " + String(acclFormat[3]) + " )");
-  Serial.println("Accel: ( " + String(x_a) + ", " + String(y_a) + ", " + String(z_a) + " )");
-  Serial.println(String("Flex Sensors: \n\t") + String("FLEX 1: ") + String(analogRead(FLEX1)) + String("\n\tFLEX 2: ") + String(analogRead(FLEX2)) + String("\n\tFLEX 3: ") + String(analogRead(FLEX3)) + String("\n\tFLEX 4: ") + String(analogRead(FLEX4)));
+//  Serial.println("Gyro: ( " + String(x_g) + ", " + String(y_g) + ", " + String(z_g) + " )");
+//  Serial.println("Accel: ( " + String(acclFormat[0]) + ", " + String(acclFormat[1]) + ", " + String(acclFormat[2]) + ", " + String(acclFormat[3]) + " )");
+//  Serial.println("Accel: ( " + String(x_a) + ", " + String(y_a) + ", " + String(z_a) + " )");
+//  Serial.println(String("Flex Sensors: \n\t") + String("FLEX 1: ") + String(analogRead(FLEX1)) + String("\n\tFLEX 2: ") + String(analogRead(FLEX2)) + String("\n\tFLEX 3: ") + String(analogRead(FLEX3)) + String("\n\tFLEX 4: ") + String(analogRead(FLEX4)));
   
   
-  if(analogRead(FLEX1) < 800) {
+  if(analogRead(FLEX1) < FLEX1_THRESHOLD) {
     flex1_b = (byte) 0x01;
   }
   else{
     flex1_b = (byte) 0x00;
   }
-  if(analogRead(FLEX2) < 800) {
+  if(analogRead(FLEX2) < FLEX2_THRESHOLD) {
     flex2_b = (byte) 0x01;
   }
   else{
     flex2_b = (byte) 0x00;
   }
-  if(analogRead(FLEX3) < 800) {
+  if(analogRead(FLEX3) < FLEX3_THRESHOLD) {
     flex3_b = (byte) 0x01;
   }
   else{
     flex3_b = (byte) 0x00;
   }
-  if(analogRead(FLEX4) < 800) {
+  if(analogRead(FLEX4) < FLEX4_THRESHOLD) {
     flex4_b = (byte) 0x01;
   }
   else{
@@ -195,5 +201,5 @@ void loop() {
 
 
   }
-  delay(1000);
+  delay(10);
 }

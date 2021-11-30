@@ -57,6 +57,11 @@ void loop() {
     flash_time = millis();
     message_sent = false;
   }
+  // test switch
+  if (!digitalRead(zero_switch))
+  {
+    digitalWrite(BLED, HIGH);
+  }
 
   Serial.print(analogRead(FLEX1));
   Serial.print("\t");
