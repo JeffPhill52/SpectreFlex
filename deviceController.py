@@ -2,7 +2,9 @@ from socket import socket
 import commFuncs
 
 def main():
+    
     bleController = commFuncs.BLE_Controller()
+    bleController.GUI()
     if bleController.discoverDevice():
         if bleController.connectDevice():
             while(True):
