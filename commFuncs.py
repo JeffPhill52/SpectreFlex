@@ -5,8 +5,9 @@ import bleak
 import serial
 import select
 import sys
+import math
 import pyautogui
-
+import pydirectinput
 
 # Oversees BLE Communication with Spectre Flex Controller
 class BLE_Controller:
@@ -58,31 +59,40 @@ class BLE_Controller:
     def disconnectDevice(self):
         asyncio.run(self.__disconnectDevice())
 
+    #     24         0         44          6
+    # 0001 1000  0000 0000  0010 1100  0000 0110
+    # Expected: 0.48 0.01 0.9
+    # Received: 0.48 0.01 0.88
+
     # Decodes the x, y, and z values of the accelerometer from a 4 byte array
     def floatDecoder(self, acclState):
         bitArr0 = list('{0:08b}'.format(acclState[0]))
         bitArr1 = list('{0:08b}'.format(acclState[1]))
         bitArr2 = list('{0:08b}'.format(acclState[2]))
         bitArr3 = list('{0:08b}'.format(acclState[3]))
+        bitArr0.reverse()
+        bitArr1.reverse()
+        bitArr2.reverse()
+        bitArr3.reverse()
 
-        if bitArr0[7] == 1:
+        if int(bitArr0[7]) == 1:
             x_sign = -1
         else:
             x_sign = 1
 
-        if bitArr1[7] == 1:
+        if int(bitArr1[7]) == 1:
             y_sign = -1
         else:
             y_sign = 1
 
-        if bitArr2[7] == 1:
+        if int(bitArr2[7]) == 1:
             z_sign = -1
         else:
             z_sign = 1
 
-        x = float(bitArr0[6])*x_sign
-        y = float(bitArr1[6])*y_sign
-        z = float(bitArr2[6])*z_sign
+        x = float(bitArr0[6])
+        y = float(bitArr1[6])
+        z = float(bitArr2[6])
 
         x_dec = float(bitArr3[0])
         y_dec = float(bitArr3[1])
@@ -97,16 +107,64 @@ class BLE_Controller:
         y_dec = float(y_dec)/float(100)
         z_dec = float(z_dec)/float(100)
 
+
         x += x_dec
         y += y_dec
         z += z_dec
 
+        x = x*x_sign
+        y = y*y_sign
+        z = z*z_sign
+
         return [x, y, z]
 
+    # Calculates the roll and pitch of the spectre flex
+    # acclState: [x, y, z]
+    # returns: [roll, pitch]
+    def rollAndPitch(self, acclState):
+        # roll = atan(Y_out / sqrt(pow(X_out, 2) + pow(Z_out, 2))) * 180 / PI;
+        # pitch = atan(-1 * X_out / sqrt(pow(Y_out, 2) + pow(Z_out, 2))) * 180 / PI;
+        return [math.atan(acclState[1] / math.sqrt(pow(acclState[0] + 0.0001, 2) + pow(acclState[2] + 0.0001, 2))) * 180 / math.pi, math.atan(-1 * (acclState[0]) / math.sqrt(pow(acclState[0]+0.0001, 2) + pow(acclState[2] + 0.0001, 2))) * 180 / math.pi ]
 
 
+class controllerCommands:
 
+    def __init__(self) -> None:
+        #self.screenSize = pyautogui.size()
+        pyautogui.moveTo(1920, 1080)
+        #print("Screensize: ",self.screenSize)
+        pyautogui.FAILSAFE = False
 
+        #self.Position = [0, 0, 0]
+
+        #self.tolerance = 0.1
+
+    # Takes the roll and pitch of the spectre flex and uses it to move the mouse
+    def moveMouse(self, gyroScope, time, flexBytes, roll_and_pitch):
+        # math.sqrt(pow(gyroScope[1], 2) + pow(gyroScope[2], 2))
+        
+        #if gyroScope[0] > self.tolerance:
+        #    self.Position[0] = (self.Position[0] + gyroScope[0]*time)
+        #if gyroScope[1] > self.tolerance:
+        #    self.Position[1] = (self.Position[1] + gyroScope[1]*time)
+        #if gyroScope[2] > self.tolerance:
+        #    self.Position[2] = (self.Position[2] + gyroScope[2]*time)
+
+        #print("Position: ", self.Position)        
+        pydirectinput.move(int(-gyroScope[2]*8000), int(-gyroScope[1]*6000))
+
+    def buttonClicks(self, flexBytes):
+        if int(flexBytes[2]) == 1:
+            pydirectinput.click()
+
+        if int(flexBytes[3]) == 1:
+            pydirectinput.press('r')
+        
+        if int(flexBytes[1]) == 0:
+            pydirectinput.keyDown('w')
+
+        elif int(flexBytes[1]) == 1:
+            pydirectinput.keyUp('w') 
 
 class serConnection:
     def __init__(self, incomingPort, outgoingPort, deviceAddr) -> None:
@@ -155,4 +213,5 @@ class serConnection:
 
     def close(self) -> None:
         self.sock.close
+
 
