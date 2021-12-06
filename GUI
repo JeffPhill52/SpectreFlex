@@ -1,0 +1,46 @@
+import PySimpleGUI as sg
+
+#GUI TIME
+        UPKEY = 'z'
+        RIGHTKEY = 'z'
+        LEFTKEY = 'z'
+        DOWNKEY = 'z'
+
+
+        sg.theme('Reds')
+        layout = [ [sg.Image('SPECTREFLEX.png', 'center' )]  , [sg.Text("Thank you for using spectre flex. Please input your controls below!")], #INTRODUCTION
+        [sg.Text("Please Input Keyboard Up Control"),sg.InputText( key = "UPBOX")],
+        [sg.Text("Please Input Keyboard Right Control"),sg.InputText( key = "RIGHTBOX")],
+        [sg.Text("Please Input Keyboard Down Control"),sg.InputText( key = "DOWNBOX")],
+        [sg.Text("Please Input Keyboard Left Control"),sg.InputText( key = "LEFTBOX")],
+        [sg.Button('OK') , sg.Button('Close Window')]  ] #BUTTONS
+
+        window = sg.Window("Spectre-Flex Controller GUI", layout, margins=(100,100) )
+        
+
+
+
+
+        while True:
+            event, values = window.read()
+            if event == "Close Window" or event == sg.WIN_CLOSED:
+                break 
+            
+            if event == "OK":
+                UPKEY = values["UPBOX"]
+                RIGHTKEY = values["RIGHTBOX"]
+                DOWNKEY = values["DOWNBOX"]
+                LEFTKEY = values["LEFTBOX"]
+                layout2 = [[sg.Text("You have changed your controls. Please Exit the spectreflex GUI completely and continue with your experience!")]]
+                CONFIRM = sg.Window("Confirmation" , layout2 )
+                while True: 
+                    event, values = CONFIRM.read()
+                    if event == sg.WIN_CLOSED:
+                        break
+
+
+        window.close()
+
+        print("Control Values: ", UPKEY, RIGHTKEY,DOWNKEY,LEFTKEY)
+
+

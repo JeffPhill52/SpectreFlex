@@ -12,9 +12,10 @@ def main():
     pydirectinput.PAUSE = 0
     pydirectinput.MINIMUM_SLEEP = 0
     
-
     bleController = commFuncs.BLE_Controller()
     commands = commFuncs.controllerCommands()
+    bleController.GUI()
+
     if bleController.discoverDevice():
         if bleController.connectDevice():
             start = time.time()

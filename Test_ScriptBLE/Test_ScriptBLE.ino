@@ -18,6 +18,14 @@ const int FLEX2 = A1;     // Index
 const int FLEX3 = A2;     // Middle
 const int FLEX4 = A3;     // Ring
 
+const int FLEX1_THRESHOLD = 550;
+const int FLEX2_THRESHOLD = 570;
+const int FLEX3_THRESHOLD = 550;
+const int FLEX4_THRESHOLD = 580;
+
+const int GYRO_RANGE = 500;
+
+
 char msgBuffer[32];
 
 void startBLE(){
@@ -135,9 +143,32 @@ void loop() {
   float x_g, y_g, z_g, x_a, y_a, z_a;
   byte flex1_b, flex2_b, flex3_b, flex4_b, gyroX_b, gyroY_b, gyroZ_b, acclX_b, acclY_b, acclZ_b;
   byte acclFormat[4] = {(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00};
+  byte gyroFormat[4] = {(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00};
 
-  if (IMU.gyroscopeAvailable())
+  if (IMU.gyroscopeAvailable()){
     IMU.readGyroscope(x_g, y_g, z_g);
+    if (x_g > GYRO_RANGE)
+      x_g = GYRO_RANGE;
+    else if (x_g < -GYRO_RANGE)
+      x_g = -GYRO_RANGE;
+
+    if (y_g > GYRO_RANGE)
+      y_g = GYRO_RANGE;
+    else if (y_g < -GYRO_RANGE)
+      y_g = -GYRO_RANGE;
+
+    if (z_g > GYRO_RANGE)
+      z_g = GYRO_RANGE;
+    else if (z_g < -GYRO_RANGE)
+      z_g = -GYRO_RANGE;
+
+    x_g = ( x_g / GYRO_RANGE ) * 1.99;
+    y_g = ( y_g / GYRO_RANGE ) * 1.99;
+    z_g = ( z_g / GYRO_RANGE ) * 1.99;
+
+    floatFormatting(gyroFormat, x_g, y_g, z_g);
+
+  }
   else
     x_g = 0.00, y_g = 0.00, z_g = 0.00;
   if (IMU.accelerationAvailable()){
@@ -156,38 +187,38 @@ void loop() {
   acclY_b = (byte) ( (int) (y_a*125));
   acclZ_b = (byte) ((int) (z_a));
 
-  Serial.println("Gyro: ( " + String(x_g) + ", " + String(y_g) + ", " + String(z_g) + " )");
-  Serial.println("Accel: ( " + String(acclFormat[0]) + ", " + String(acclFormat[1]) + ", " + String(acclFormat[2]) + ", " + String(acclFormat[3]) + " )");
-  Serial.println("Accel: ( " + String(x_a) + ", " + String(y_a) + ", " + String(z_a) + " )");
-  Serial.println(String("Flex Sensors: \n\t") + String("FLEX 1: ") + String(analogRead(FLEX1)) + String("\n\tFLEX 2: ") + String(analogRead(FLEX2)) + String("\n\tFLEX 3: ") + String(analogRead(FLEX3)) + String("\n\tFLEX 4: ") + String(analogRead(FLEX4)));
+//  Serial.println("Gyro: ( " + String(x_g) + ", " + String(y_g) + ", " + String(z_g) + " )");
+//  Serial.println("Accel: ( " + String(acclFormat[0]) + ", " + String(acclFormat[1]) + ", " + String(acclFormat[2]) + ", " + String(acclFormat[3]) + " )");
+//  Serial.println("Accel: ( " + String(x_a) + ", " + String(y_a) + ", " + String(z_a) + " )");
+//  Serial.println(String("Flex Sensors: \n\t") + String("FLEX 1: ") + String(analogRead(FLEX1)) + String("\n\tFLEX 2: ") + String(analogRead(FLEX2)) + String("\n\tFLEX 3: ") + String(analogRead(FLEX3)) + String("\n\tFLEX 4: ") + String(analogRead(FLEX4)));
   
   
-  if(analogRead(FLEX1) < 800) {
+  if(analogRead(FLEX1) < FLEX1_THRESHOLD) {
     flex1_b = (byte) 0x01;
   }
   else{
     flex1_b = (byte) 0x00;
   }
-  if(analogRead(FLEX2) < 800) {
+  if(analogRead(FLEX2) < FLEX2_THRESHOLD) {
     flex2_b = (byte) 0x01;
   }
   else{
     flex2_b = (byte) 0x00;
   }
-  if(analogRead(FLEX3) < 800) {
+  if(analogRead(FLEX3) < FLEX3_THRESHOLD) {
     flex3_b = (byte) 0x01;
   }
   else{
     flex3_b = (byte) 0x00;
   }
-  if(analogRead(FLEX4) < 800) {
+  if(analogRead(FLEX4) < FLEX4_THRESHOLD) {
     flex4_b = (byte) 0x01;
   }
   else{
     flex4_b = (byte) 0x00;
   }
 
-  byte maxByte[20] = {flex1_b, flex2_b, flex3_b, flex4_b, acclFormat[0], acclFormat[1], acclFormat[2], acclFormat[3], (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF};
+  byte maxByte[20] = {flex1_b, flex2_b, flex3_b, flex4_b, acclFormat[0], acclFormat[1], acclFormat[2], acclFormat[3], gyroFormat[0], gyroFormat[1], gyroFormat[2], gyroFormat[3], (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF};
 
   if (central.connected())
   {
@@ -195,5 +226,5 @@ void loop() {
 
 
   }
-  delay(1000);
+  delay(5);
 }
