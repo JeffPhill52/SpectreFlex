@@ -11,10 +11,10 @@ def main():
     pyautogui.PAUSE = 0
     pydirectinput.PAUSE = 0
     pydirectinput.MINIMUM_SLEEP = 0
-    
+    pydirectinput.FAILSAFE = False
     bleController = commFuncs.BLE_Controller()
     commands = commFuncs.controllerCommands()
-    bleController.GUI()
+    #bleController.GUI()
 
     if bleController.discoverDevice():
         if bleController.connectDevice():

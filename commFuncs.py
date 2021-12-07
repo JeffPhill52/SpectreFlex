@@ -133,7 +133,7 @@ class controllerCommands:
 
     def __init__(self) -> None:
         #self.screenSize = pyautogui.size()
-        pyautogui.moveTo(1920, 1080)
+        pyautogui.moveTo(960, 540)
         #print("Screensize: ",self.screenSize)
         pyautogui.FAILSAFE = False
 
@@ -153,7 +153,7 @@ class controllerCommands:
         #    self.Position[2] = (self.Position[2] + gyroScope[2]*time)
 
         #print("Position: ", self.Position)        
-        pydirectinput.move(int(-gyroScope[2]*8000), int(-gyroScope[1]*6000))
+        pydirectinput.move(int(-gyroScope[2]*1500), int(-gyroScope[1]*1500))                         # DECIDES SENSITIVITY??
 
     def buttonClicks(self, flexBytes):
         if int(flexBytes[2]) == 1:
