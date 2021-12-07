@@ -153,32 +153,92 @@ class controllerCommands:
         #    self.Position[2] = (self.Position[2] + gyroScope[2]*time)
 
         #print("Position: ", self.Position)        
-        pydirectinput.move(int(-gyroScope[2]*1500), int(-gyroScope[1]*1500))                         # DECIDES SENSITIVITY??
+        pydirectinput.move(int(-gyroScope[2]*1000), int(-gyroScope[1]*1000))                         # DECIDES SENSITIVITY
 
-    def buttonClicks(self, flexBytes):
-        if int(flexBytes[2]) == 1:
-            pydirectinput.click()
+    def buttonClicks(self, flexBytes, switchByte,KeyValues):
 
-        if int(flexBytes[3]) == 1:
-            pydirectinput.press('r')
+
+##############0
+        #print(KeyValues.type())
+        if int(flexBytes[0]) == 1: # RINGCLICKED
+            if KeyValues[3] == "Click":
+                pydirectinput.click()
+            else:
+                pydirectinput.keyDown(KeyValues[3])  # KEYVALUES [ thumb , pointer , middle , ring]
+
+        if int(flexBytes[0]) == 0: # RING UNCLICKED
+            if KeyValues[3] != "Click":
+                pydirectinput.keyUp(KeyValues[3])
+
+        # if int(flexBytes[0]) == 1:
+        #     pydirectinput.keyDown('e')
+
+        # elif int(flexBytes[0]) == 0:
+        #     pydirectinput.keyUp('e') 
+
+##############0
+##############1
+        #print(KeyValues.type())
+        if int(flexBytes[1]) == 1: # MIDDLE CLICKED
+            if KeyValues[2] == "Click":
+                pydirectinput.click()
+            else:
+                pydirectinput.keyDown(KeyValues[2])  # KEYVALUES [ thumb , pointer , middle , ring]
+
+        if int(flexBytes[1]) == 0: # MIDDLE UNCLICKED
+            if KeyValues[2] != "Click":
+                pydirectinput.keyUp(KeyValues[2])
         
-        if int(flexBytes[1]) == 0:
-            pydirectinput.keyDown('w')
+        # if int(flexBytes[1]) == 1: 
+        #     pydirectinput.keyDown('w')
 
-        elif int(flexBytes[1]) == 1:
-            pydirectinput.keyUp('w') 
+        # elif int(flexBytes[1]) == 0:
+        #     pydirectinput.keyUp('w') 
+             
+##############1
+#############2
+        if int(flexBytes[2]) == 1: # POINTER CLICKED
+            if KeyValues[1] == "Click":
+                pydirectinput.click()
+            else:
+                pydirectinput.keyDown(KeyValues[1])
+
+        if int(flexBytes[2]) == 0: # POINTER UNCLICKED
+            if KeyValues[1] != "Click":
+                pydirectinput.keyUp(KeyValues[1])
+###############2
+##############3
+        #print(KeyValues.type())
+        if int(flexBytes[3]) == 1: # thumb CLICKED
+            if KeyValues[0] == "Click":
+                pydirectinput.click()
+            else:
+                pydirectinput.keyDown(KeyValues[0])  # KEYVALUES [ thumb , pointer , middle , ring]
+
+        if int(flexBytes[3]) == 0: # thumb UNCLICKED
+            if KeyValues[0] != "Click":
+                pydirectinput.keyUp(KeyValues[0])
+        # if int(flexBytes[3]) == 1: #THUMB CLICKED
+        #     pydirectinput.press('r')
+##############3
+
+
+
+        if int(switchByte) == 1:
+            pyautogui.moveTo(960, 540)
+        
 
     def GUI(self):
-        UPKEY = 'z'
-        RIGHTKEY = 'z'
-        LEFTKEY = 'z'
-        DOWNKEY = 'z'
+        UPKEY = 'r'
+        RIGHTKEY = "Click"
+        LEFTKEY = 'e'
+        DOWNKEY = 'w'
         sg.theme('Reds')
         layout = [ [sg.Image('SPECTREFLEX.png', 'center' )]  , [sg.Text("Thank you for using spectre flex. Please input your controls below!")], #INTRODUCTION
-        [sg.Text("Please Input Keyboard Up Control"),sg.InputText( key = "UPBOX")],
-        [sg.Text("Please Input Keyboard Right Control"),sg.InputText( key = "RIGHTBOX")],
-        [sg.Text("Please Input Keyboard Down Control"),sg.InputText( key = "DOWNBOX")],
-        [sg.Text("Please Input Keyboard Left Control"),sg.InputText( key = "LEFTBOX")],
+        [sg.Text("Please Input Thumb Control"),sg.InputText( key = "UPBOX")],
+        [sg.Text("Please Input Pointer Control"),sg.InputText( key = "RIGHTBOX")],
+        [sg.Text("Please Input Middle Control"),sg.InputText( key = "DOWNBOX")],
+        [sg.Text("Please Input Ring Control"),sg.InputText( key = "LEFTBOX")],
         [sg.Button('OK') , sg.Button('Close Window')]  ] #BUTTONS
 
         window = sg.Window("Spectre-Flex Controller GUI", layout, margins=(100,100) )
@@ -205,6 +265,7 @@ class controllerCommands:
         window.close()
 
         print("Control Values: ", UPKEY, RIGHTKEY,DOWNKEY,LEFTKEY)
+        return [UPKEY, RIGHTKEY,DOWNKEY,LEFTKEY]
 
 
 
