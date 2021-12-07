@@ -1,4 +1,9 @@
-
+/*
+ * Specre Flex Arduino Control
+ * 
+ * This program uses an Arduino Nano RP2040 to capture value and send them
+ * over bluetooth to the connected device
+ */
 
 // Libraries for Bloothtooth Module
 #include <ArduinoBLE.h>
@@ -12,12 +17,12 @@ BLECharacteristic testCharacteristic("6F457C49-2D99-4334-B087-B7CD9E62D808", BLE
 
 
 // Flex sensor pins
-
 const int FLEX1 = A0;     // Thumb
 const int FLEX2 = A1;     // Index
 const int FLEX3 = A2;     // Middle
 const int FLEX4 = A3;     // Ring
 
+// Flex sensor threshold values
 const int FLEX1_THRESHOLD = 550;
 const int FLEX2_THRESHOLD = 570;
 const int FLEX3_THRESHOLD = 550;
@@ -25,6 +30,13 @@ const int FLEX4_THRESHOLD = 580;
 
 const int GYRO_RANGE = 500;
 
+// Bluetooth LED
+const int BLED = 3;
+const int BLINK_TIME = 250;
+int time_since_last_blink = millis();
+
+// Switch Input
+const int SWITCH_INPUT = 4;   // active low (low when button is pressed)
 
 char msgBuffer[32];
 
@@ -33,6 +45,13 @@ void startBLE(){
   {
     Serial.println("starting BLE failed!");
   }
+
+  // set BLED as an output
+  pinMode(BLED, OUTPUT);
+  digitalWrite(BLED, LOW);
+
+  // set switch as an input
+  pinMode(SWITCH_INPUT, INPUT);
 
     /* 
    *  Bluetooth Setup
@@ -53,12 +72,17 @@ void startBLE(){
 
 void setup() {
 
-  Serial.begin(9600);
-  Serial.println("Arduino Started");
+  //Serial.begin(9600);
+  //Serial.println("Arduino Started");
 
   if (!IMU.begin()) {
-    Serial.println("Failed to initialize IMU!");
-    while (1);
+    while (1) {
+      // Flash BLED very fast
+      digitalWrite(BLED, HIGH);
+      delay(100);
+      digitalWrite(BLED, LOW);
+      delay(100);
+    }
 }
 
   startBLE();
@@ -141,7 +165,7 @@ void loop() {
   BLEDevice central = BLE.central();
 
   float x_g, y_g, z_g, x_a, y_a, z_a;
-  byte flex1_b, flex2_b, flex3_b, flex4_b, gyroX_b, gyroY_b, gyroZ_b, acclX_b, acclY_b, acclZ_b;
+  byte flex1_b, flex2_b, flex3_b, flex4_b, switch_b, gyroX_b, gyroY_b, gyroZ_b, acclX_b, acclY_b, acclZ_b;
   byte acclFormat[4] = {(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00};
   byte gyroFormat[4] = {(byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00};
 
@@ -184,7 +208,7 @@ void loop() {
   gyroZ_b = (byte) ((unsigned int) (z_g));
 
   acclX_b = (byte) ((int) (x_a));
-  acclY_b = (byte) ( (int) (y_a*125));
+  acclY_b = (byte) ((int) (y_a*125));
   acclZ_b = (byte) ((int) (z_a));
 
 //  Serial.println("Gyro: ( " + String(x_g) + ", " + String(y_g) + ", " + String(z_g) + " )");
@@ -217,14 +241,34 @@ void loop() {
   else{
     flex4_b = (byte) 0x00;
   }
+  if(!digitalRead(SWITCH_INPUT)) {
+    switch_b = (byte) 0x01;
+  }
+  else {
+    switch_b = (byte) 0x00;
+  }
 
-  byte maxByte[20] = {flex1_b, flex2_b, flex3_b, flex4_b, acclFormat[0], acclFormat[1], acclFormat[2], acclFormat[3], gyroFormat[0], gyroFormat[1], gyroFormat[2], gyroFormat[3], (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF};
+  //byte maxByte[20] = {flex1_b, flex2_b, flex3_b, flex4_b, acclFormat[0], acclFormat[1], acclFormat[2], acclFormat[3], gyroFormat[0], gyroFormat[1], gyroFormat[2], gyroFormat[3], (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF};
+  byte maxByte[20] = {flex1_b, flex2_b, flex3_b, flex4_b, switch_b, acclFormat[0], acclFormat[1], acclFormat[2], acclFormat[3], gyroFormat[0], gyroFormat[1], gyroFormat[2], gyroFormat[3], (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF};
 
+  // send data over bluetooth if connection and turn on bluetooth LED
   if (central.connected())
   {
-    testCharacteristic.writeValue(maxByte, 20);
-
-
+    testCharacteristic.writeValue(maxByte, 20);  
+    digitalWrite(BLED, HIGH);  
   }
+  else
+  {
+    if(millis() - time_since_last_blink >= BLINK_TIME)
+    {
+      digitalWrite(BLED, HIGH);
+    }
+    if(millis() - time_since_last_blink >= 2 * BLINK_TIME)
+    {
+      digitalWrite(BLED, LOW);
+      time_since_last_blink = millis();
+    }
+  }
+  
   delay(5);
 }
