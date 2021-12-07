@@ -133,7 +133,10 @@ class controllerCommands:
 
     def __init__(self) -> None:
         #self.screenSize = pyautogui.size()
-        pyautogui.moveTo(960, 540)
+        Width, Height = pyautogui.size()
+        WLoc = Width / 2
+        HLoc = Height / 2
+        pyautogui.moveTo(WLoc, HLoc)
         #print("Screensize: ",self.screenSize)
         pyautogui.FAILSAFE = False
 
@@ -225,7 +228,10 @@ class controllerCommands:
 
 
         if int(switchByte) == 1:
-            pyautogui.moveTo(960, 540)
+            Width, Height = pyautogui.size()
+            WLoc = Width / 2
+            HLoc = Height / 2
+            pyautogui.moveTo(WLoc, HLoc)
         
 
     def GUI(self):
@@ -234,7 +240,7 @@ class controllerCommands:
         LEFTKEY = 'e'
         DOWNKEY = 'w'
         sg.theme('Reds')
-        layout = [ [sg.Image('SPECTREFLEX.png', 'center' )]  , [sg.Text("Thank you for using spectre flex. Please input your controls below!")], #INTRODUCTION
+        layout = [ [sg.Image('SPECTREFLEX.png', 'center' )]  , [sg.Text("Thank you for using spectre flex. Please input your controls below! Use *Click* for mouse left")], #INTRODUCTION
         [sg.Text("Please Input Thumb Control"),sg.InputText( key = "UPBOX")],
         [sg.Text("Please Input Pointer Control"),sg.InputText( key = "RIGHTBOX")],
         [sg.Text("Please Input Middle Control"),sg.InputText( key = "DOWNBOX")],
@@ -264,7 +270,7 @@ class controllerCommands:
 
         window.close()
 
-        print("Control Values: ", UPKEY, RIGHTKEY,DOWNKEY,LEFTKEY)
+        #print("Control Values: ", UPKEY, RIGHTKEY,DOWNKEY,LEFTKEY)
         return [UPKEY, RIGHTKEY,DOWNKEY,LEFTKEY]
 
 
