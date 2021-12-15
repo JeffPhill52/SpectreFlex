@@ -211,12 +211,6 @@ void loop() {
   acclY_b = (byte) ((int) (y_a*125));
   acclZ_b = (byte) ((int) (z_a));
 
-//  Serial.println("Gyro: ( " + String(x_g) + ", " + String(y_g) + ", " + String(z_g) + " )");
-//  Serial.println("Accel: ( " + String(acclFormat[0]) + ", " + String(acclFormat[1]) + ", " + String(acclFormat[2]) + ", " + String(acclFormat[3]) + " )");
-//  Serial.println("Accel: ( " + String(x_a) + ", " + String(y_a) + ", " + String(z_a) + " )");
-//  Serial.println(String("Flex Sensors: \n\t") + String("FLEX 1: ") + String(analogRead(FLEX1)) + String("\n\tFLEX 2: ") + String(analogRead(FLEX2)) + String("\n\tFLEX 3: ") + String(analogRead(FLEX3)) + String("\n\tFLEX 4: ") + String(analogRead(FLEX4)));
-  
-  
   if(analogRead(FLEX1) < FLEX1_THRESHOLD) {
     flex1_b = (byte) 0x01;
   }
